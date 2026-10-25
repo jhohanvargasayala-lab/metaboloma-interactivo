@@ -315,7 +315,7 @@ function renderAtlas() {
         </div>
         <div class="hero-cta">
           <a class="btn primary" href="#/quiz">${icon("quiz")} Quiz por rutas</a>
-          <span>${QUIZ_PER_ROUTE} preguntas por ruta · ${QUIZ.length} en total</span>
+          <span>${QUIZ_PER_ROUTE} preguntas por ruta · ${QUIZ_TOTAL} en total</span>
         </div>
       </div>
 
@@ -1099,14 +1099,14 @@ function focusQuizElement(id) {
 
 function setActiveQuizRoute(routeId) {
   const route = QUIZ_ROUTE_META.find((item) => item.id === routeId);
-  if (!route || !route.questions.length) return null;
+  if (!route) return null;
   if (quizState.routeId !== route.id) {
     quizState.routeId = route.id;
-    activeQuiz = route.questions;
+    activeQuiz = route.questions || [];
     activeQuizRoute = route;
     resetQuizState(false);
   } else {
-    activeQuiz = route.questions;
+    activeQuiz = route.questions || [];
     activeQuizRoute = route;
   }
   return route;
@@ -1188,7 +1188,7 @@ function renderQuizLanding() {
         <div class="quiz-landing-stats" aria-label="Alcance del quiz">
           <div><strong>${QUIZ_ROUTE_META.length}</strong><span>rutas</span></div>
           <div><strong>${QUIZ_PER_ROUTE}</strong><span>preguntas por ruta</span></div>
-          <div><strong>${QUIZ.length}</strong><span>preguntas en total</span></div>
+          <div><strong>${QUIZ_TOTAL}</strong><span>preguntas en total</span></div>
         </div>
       </div>
     </section>
@@ -1342,6 +1342,34 @@ function renderQuizResult() {
 
 function startQuiz() {
   if (!activeQuizRoute) return;
+
+  /* La generación de cada ruta se hace bajo demanda. Si aún no está en
+     memoria, se muestra un estado breve mientras se preparan las preguntas. */
+  if (!activeQuiz.length) {
+    const route = activeQuizRoute;
+    const mount = document.getElementById("quizMount");
+    if (mount) {
+      mount.innerHTML = `
+        <section class="card quiz-intro" role="status" aria-live="polite">
+          <div class="quiz-intro-icon">${icon("quiz")}</div>
+          <h2>Preparando las preguntas…</h2>
+          <p>Estamos organizando las ${QUIZ_PER_ROUTE} preguntas de ${route.name} a partir de las fichas del atlas.</p>
+        </section>`;
+    }
+    setTimeout(() => {
+      if (!activeQuizRoute || activeQuizRoute.id !== route.id) return;
+      activeQuiz = ensureRouteQuiz(route);
+      if (!activeQuiz.length) {
+        if (mount) mount.innerHTML = `<p class="quiz-note">${icon("info")} No se pudieron preparar las preguntas de esta ruta. Vuelve a intentarlo.</p>`;
+        return;
+      }
+      resetQuizState(true);
+      renderQuizContent();
+      focusQuizElement("quizQuestion");
+    }, 30);
+    return;
+  }
+
   resetQuizState(true);
   renderQuizContent();
   focusQuizElement("quizQuestion");

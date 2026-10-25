@@ -234,7 +234,7 @@ const SUPPORT_SECTIONS = [
             <tr><td>Explorador de enfermedades</td><td>Menú «Explorador»</td><td>Filtra por organelo, categoría y texto libre; muestra el número de resultados.</td></tr>
             <tr><td>Ficha de enfermedad</td><td>Clic en una tarjeta o en un nodo</td><td>Reúne mecanismo, diagnóstico, tratamiento, fuentes y validación.</td></tr>
             <tr><td>Búsqueda global</td><td>Ctrl/Cmd + K, la tecla «/» o el buscador</td><td>Encuentra enfermedades, genes, enzimas, rutas y organelos.</td></tr>
-            <tr><td>Quiz por rutas</td><td>Menú «Quiz», pie de página o botón «Quiz por rutas»</td><td>Ofrece ${QUIZ_PER_ROUTE} preguntas por cada una de las ${QUIZ_ROUTE_META.length} rutas (${QUIZ.length} en total), con retroalimentación inmediata, puntuación y revisión de respuestas.</td></tr>
+            <tr><td>Quiz por rutas</td><td>Menú «Quiz», pie de página o botón «Quiz por rutas»</td><td>Ofrece ${QUIZ_PER_ROUTE} preguntas por cada una de las ${QUIZ_ROUTE_META.length} rutas (${QUIZ_TOTAL} en total), con retroalimentación inmediata, puntuación y revisión de respuestas.</td></tr>
             <tr><td>Documentación integrada</td><td>Pie de página</td><td>Ofrece este sustento y el manual de uso, con opción de imprimir o descargar.</td></tr>
           </tbody>
         </table>
@@ -434,7 +434,7 @@ const MANUAL_SECTIONS = [
         <li><strong>Atlas celular:</strong> vista principal con la célula interactiva.</li>
         <li><strong>Mapa metabólico:</strong> listado de las ${PATHWAYS.length} rutas agrupadas por organelo.</li>
         <li><strong>Explorador:</strong> catálogo filtrable de las ${DISEASES.length} enfermedades.</li>
-        <li><strong>Quiz:</strong> ${QUIZ_ROUTE_META.length} rutas con ${QUIZ_PER_ROUTE} preguntas por ruta (${QUIZ.length} en total) y retroalimentación inmediata.</li>
+        <li><strong>Quiz:</strong> ${QUIZ_ROUTE_META.length} rutas con ${QUIZ_PER_ROUTE} preguntas por ruta (${QUIZ_TOTAL} en total) y retroalimentación inmediata.</li>
         <li><strong>Buscar:</strong> abre la búsqueda global; también puedes pulsar <kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>K</kbd> o <kbd>/</kbd>.</li>
       </ul>
       <p>Las migas de pan aparecen en las vistas internas. Por ejemplo, en una ficha puedes volver al atlas, a la ruta o al organelo. El pie de página enlaza este manual, el sustento científico y el aviso educativo.</p>
@@ -556,7 +556,7 @@ const MANUAL_SECTIONS = [
     num: "08",
     title: "Quiz por rutas",
     body: () => `
-      <p>El quiz está dividido por ruta metabólica. Hay ${QUIZ_ROUTE_META.length} rutas y cada una ofrece ${QUIZ_PER_ROUTE} preguntas sobre sus enfermedades: genes, proteínas, herencia, biomarcadores, mecanismos, diagnóstico, seguimiento y tratamiento. En total, el banco genera ${QUIZ.length} preguntas.</p>
+      <p>El quiz está dividido por ruta metabólica. Hay ${QUIZ_ROUTE_META.length} rutas y cada una ofrece ${QUIZ_PER_ROUTE} preguntas sobre sus enfermedades: genes, proteínas, herencia, biomarcadores, mecanismos, diagnóstico, seguimiento y tratamiento. En total, el banco genera ${QUIZ_TOTAL} preguntas.</p>
       <ol class="doc-numbered">
         <li>Abre <strong>Quiz por rutas</strong> desde la cabecera, el pie de página o el botón de la portada.</li>
         <li>Elige una ruta. La tarjeta indica el organelo, las enfermedades incluidas y el número de preguntas.</li>

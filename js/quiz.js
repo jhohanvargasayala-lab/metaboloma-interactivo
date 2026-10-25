@@ -35,14 +35,21 @@ function quizNth(value, index) {
   return list[index] ? [list[index]] : [];
 }
 
+const quizNormalizeCache = new Map();
+const quizTokensCache = new Map();
+
 function quizNormalize(value) {
-  return String(value || "")
+  const raw = String(value || "");
+  if (quizNormalizeCache.has(raw)) return quizNormalizeCache.get(raw);
+  const normalized = raw
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
     .replace(/\s+/g, " ")
     .replace(/[.;]+$/, "")
     .trim();
+  quizNormalizeCache.set(raw, normalized);
+  return normalized;
 }
 
 function quizUnique(values) {
@@ -104,10 +111,14 @@ function quizExplain(disease, answer) {
 
 function quizTokens(value) {
   const ignored = new Set(["de", "del", "la", "el", "los", "las", "y", "o", "en", "con", "para", "por", "un", "una", "al", "a", "que", "se"]);
-  return new Set(quizNormalize(value)
+  const normalized = quizNormalize(value);
+  if (quizTokensCache.has(normalized)) return quizTokensCache.get(normalized);
+  const tokens = new Set(normalized
     .replace(/[^a-z0-9%]+/g, " ")
     .split(/\s+/)
     .filter((token) => token && !ignored.has(token)));
+  quizTokensCache.set(normalized, tokens);
+  return tokens;
 }
 
 function quizSimilarity(first, second) {
@@ -325,6 +336,17 @@ const QUIZ_CLINICAL_TYPES = new Set([
 ]);
 
 const quizDiseaseValueCache = new Map();
+const quizDiseaseTokenCache = new Map();
+const quizDiseaseMatchCache = new Map();
+const quizTypeValuesCache = new Map();
+
+function quizTypeValues(typeDef, disease) {
+  const cacheKey = `${typeDef.id}:${disease.id}`;
+  if (quizTypeValuesCache.has(cacheKey)) return quizTypeValuesCache.get(cacheKey);
+  const values = typeDef.values(disease);
+  quizTypeValuesCache.set(cacheKey, values);
+  return values;
+}
 
 function quizDiseaseValues(disease) {
   if (quizDiseaseValueCache.has(disease.id)) return quizDiseaseValueCache.get(disease.id);
@@ -336,37 +358,47 @@ function quizDiseaseValues(disease) {
   add(disease.name);
   quizList(disease.aka).forEach(add);
   QUIZ_TYPE_DEFS.forEach((typeDef) => {
-    typeDef.values(disease).forEach(add);
+    quizTypeValues(typeDef, disease).forEach(add);
   });
   quizDiseaseValueCache.set(disease.id, values);
   return values;
 }
 
+function quizDiseaseValueTokens(disease) {
+  if (quizDiseaseTokenCache.has(disease.id)) return quizDiseaseTokenCache.get(disease.id);
+  const entries = [...quizDiseaseValues(disease)].map((known) => known.split(" "));
+  quizDiseaseTokenCache.set(disease.id, entries);
+  return entries;
+}
+
 function quizIsDiseaseValue(value, disease) {
   const key = quizNormalize(value);
   if (!key) return false;
-  const values = quizDiseaseValues(disease);
-  if (values.has(key)) return true;
+  if (quizDiseaseValues(disease).has(key)) return true;
+  const cacheKey = `${disease.id}\n${key}`;
+  if (quizDiseaseMatchCache.has(cacheKey)) return quizDiseaseMatchCache.get(cacheKey);
   const tokens = key.split(" ");
-  return [...values].some((known) => {
-    const knownTokens = known.split(" ");
+  const matches = quizDiseaseValueTokens(disease).some((knownTokens) => {
     const [small, large] = tokens.length <= knownTokens.length
       ? [tokens, knownTokens]
       : [knownTokens, tokens];
     return small.length > 0 && small.every((token) => large.includes(token));
   });
+  quizDiseaseMatchCache.set(cacheKey, matches);
+  return matches;
 }
 
 function quizDistractorsFor(typeDef, disease) {
-  const correct = quizText(typeDef.values(disease)[0]);
+  const typeValues = quizTypeValues(typeDef, disease);
+  const correct = quizText(typeValues[0]);
   if (!correct) return null;
-  const sourceKeys = new Set(typeDef.values(disease).map(quizNormalize));
+  const sourceKeys = new Set(typeValues.map(quizNormalize));
   const correctKey = quizNormalize(correct);
   const pool = [];
 
   DISEASES.forEach((other) => {
     if (other.id === disease.id) return;
-    typeDef.values(other).forEach((value) => {
+    quizTypeValues(typeDef, other).forEach((value) => {
       const key = quizNormalize(value);
       if (!key || key === correctKey || sourceKeys.has(key)) return;
       if (quizIsDiseaseValue(value, disease)) return;
@@ -534,12 +566,22 @@ PATHWAYS.forEach((pathway, routeIndex) => {
     shortName: pathway.shortName,
     organelleId: (pathway.organelleIds && pathway.organelleIds[0]) || pathway.organelleId || "",
     relatedOnly: !pathway.diseaseIds.length,
-    diseases
+    diseases,
+    questions: []
   };
-  const questions = buildRouteQuiz(meta, routeIndex);
-  meta.questions = questions;
   QUIZ_ROUTE_META.push(meta);
-  QUIZ_BANK[pathway.id] = questions;
+  QUIZ_BANK[pathway.id] = meta.questions;
 });
 
-const QUIZ = QUIZ_ROUTE_META.flatMap((route) => route.questions);
+const QUIZ_TOTAL = QUIZ_ROUTE_META.length * QUIZ_PER_ROUTE;
+
+/* Las preguntas de cada ruta se generan al abrir su quiz, no al cargar
+   la portada. Así el atlas y el resto del sitio aparecen de inmediato. */
+function ensureRouteQuiz(route) {
+  if (!route) return [];
+  if (route.questions && route.questions.length) return route.questions;
+  const routeIndex = QUIZ_ROUTE_META.indexOf(route);
+  route.questions = buildRouteQuiz(route, routeIndex < 0 ? 0 : routeIndex);
+  QUIZ_BANK[route.id] = route.questions;
+  return route.questions;
+}
