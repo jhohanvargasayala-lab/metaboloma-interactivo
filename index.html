@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="description" content="Mapa Interactivo de Errores Innatos del Metabolismo (EIM): atlas dinámico organizado por organelos con enzimas mutadas, biomarcadores y tratamiento." />
+<meta name="description" content="Metaboloma interactivo : Cartografía de los Errores Innatos del Metabolismo. Atlas dinámico organizado por organelos con enzimas mutadas, biomarcadores, tratamiento y quiz de 20 preguntas por ruta metabólica." />
 <meta name="theme-color" content="#f6f9fc" />
-<title>Mapa Interactivo de Errores Innatos del Metabolismo (EIM)</title>
+<title>Metaboloma interactivo : Cartografía de los Errores Innatos del Metabolismo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -34,6 +34,7 @@
   <symbol id="i-flask" viewBox="0 0 24 24"><path d="M9 3h6M10 3v6.2L4.6 18.8A2 2 0 0 0 6.3 22h11.4a2 2 0 0 0 1.7-3.2L14 9.2V3"/><path d="M7.5 15h9"/></symbol>
   <symbol id="i-activity" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></symbol>
   <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></symbol>
+  <symbol id="i-quiz" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 4.3 1.7c-.8.7-1.8 1.3-1.8 2.3"/><path d="M12 17h.01"/></symbol>
   <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></symbol>
   <symbol id="i-droplet" viewBox="0 0 24 24"><path d="M12 2.7 6.3 9a8 8 0 1 0 11.4 0z"/></symbol>
   <symbol id="i-menu" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></symbol>
@@ -51,7 +52,7 @@
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="#0f9b8e" stroke-width="1.4" opacity=".55"/><circle cx="10" cy="10.5" r="2.6" stroke="#0f9b8e" stroke-width="1.4"/><path d="M15 15c1.6 1 3 .6 4-.4" stroke="#7c5cd6" stroke-width="1.4" stroke-linecap="round"/></svg>
       </span>
       <span class="brand-text">
-        <strong>Atlas Metabólico</strong>
+        <strong>Metaboloma interactivo</strong>
         <small>ERRORES INNATOS DEL METABOLISMO</small>
       </span>
     </a>
@@ -59,9 +60,10 @@
       <button data-route="atlas"><svg class="icon"><use href="#i-atlas"/></svg>Atlas celular</button>
       <button data-route="pathways"><svg class="icon"><use href="#i-map"/></svg>Mapa metabólico</button>
       <button data-route="explorer"><svg class="icon"><use href="#i-compass"/></svg>Explorador</button>
+      <button data-route="quiz"><svg class="icon"><use href="#i-quiz"/></svg>Quiz</button>
     </nav>
     <div class="header-actions">
-      <button class="search-trigger" id="searchTrigger" aria-label="Buscar enfermedad, gen, enzima…" title="Buscar en el atlas (Ctrl+K o /)">
+      <button class="search-trigger" id="searchTrigger" aria-label="Buscar enfermedad, gen, enzima…" title="Buscar en Metaboloma interactivo (Ctrl+K o /)">
         <svg class="icon"><use href="#i-search"/></svg>
         <span>Buscar enfermedad, gen, enzima…</span>
         <kbd aria-hidden="true">/</kbd>
@@ -75,10 +77,11 @@
     <button data-route="atlas"><svg class="icon"><use href="#i-atlas"/></svg>Atlas celular</button>
     <button data-route="pathways"><svg class="icon"><use href="#i-map"/></svg>Mapa metabólico</button>
     <button data-route="explorer"><svg class="icon"><use href="#i-compass"/></svg>Explorador</button>
+    <button data-route="quiz"><svg class="icon"><use href="#i-quiz"/></svg>Quiz por rutas</button>
   </div>
 </header>
 
-<div class="search-overlay" id="searchOverlay" role="dialog" aria-modal="true" aria-label="Buscar en el atlas">
+<div class="search-overlay" id="searchOverlay" role="dialog" aria-modal="true" aria-label="Buscar en Metaboloma interactivo">
   <div class="search-modal">
     <div class="search-field">
       <svg class="icon"><use href="#i-search"/></svg>
@@ -99,7 +102,7 @@
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="#0f9b8e" stroke-width="1.4" opacity=".55"/><circle cx="10" cy="10.5" r="2.6" stroke="#0f9b8e" stroke-width="1.4"/><path d="M15 15c1.6 1 3 .6 4-.4" stroke="#7c5cd6" stroke-width="1.4" stroke-linecap="round"/></svg>
       </span>
       <div>
-        <strong>Atlas Metabólico</strong>
+        <strong>Metaboloma interactivo</strong>
         <p id="footerCounts">Prototipo educativo</p>
       </div>
     </div>
@@ -107,6 +110,7 @@
       <a href="#/sustento">Sustento científico</a>
       <a href="#/manual">Manual de uso</a>
       <a href="#/explorer">Explorador</a>
+      <a href="#/quiz">Quiz por rutas</a>
     </nav>
     <p class="footer-note">Datos con fines formativos basados en fuentes como GeneReviews, OMIM y Orphanet. No sustituye la valoración de profesionales sanitarios ni constituye consejo médico.</p>
   </div>
@@ -114,6 +118,7 @@
 
 <script src="js/data.js"></script>
 <script src="js/diseases.js"></script>
+<script src="js/quiz.js"></script>
 <script src="js/docs.js"></script>
 <script src="js/app.js"></script>
 </body>

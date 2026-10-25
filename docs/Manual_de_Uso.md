@@ -1,11 +1,11 @@
-﻿# Manual de uso
+# Manual de uso
 
-## Mapa Interactivo de Errores Innatos del Metabolismo (EIM)
+## Metaboloma interactivo : Cartografía de los Errores Innatos del Metabolismo
 ### Un atlas dinámico e interactivo organizado por organelos
 
-**Versión 1.1 · octubre de 2026**
+**Versión 1.3 · octubre de 2026**
 
-Este manual explica cómo recorrer el atlas, interpretar los diagramas, filtrar enfermedades y consultar las fichas sin ayuda externa. El recurso es educativo: no sustituye la valoración de profesionales sanitarios ni las guías clínicas.
+Este manual explica cómo recorrer el atlas, interpretar los diagramas, filtrar enfermedades, consultar las fichas y usar el quiz por rutas sin ayuda externa. El recurso es educativo: no sustituye la valoración de profesionales sanitarios ni las guías clínicas.
 
 ---
 
@@ -31,11 +31,12 @@ El atlas funciona en navegadores modernos de escritorio o móvil (Chrome, Edge, 
 
 ## 2. Navegación general
 
-La cabecera se mantiene visible y contiene la marca, tres accesos principales y el buscador:
+La cabecera se mantiene visible y contiene la marca, cuatro accesos principales y el buscador:
 
 - **Atlas celular:** vista principal con la célula interactiva.
 - **Mapa metabólico:** listado de las 20 rutas agrupadas por organelo.
 - **Explorador:** catálogo filtrable de las 40 enfermedades.
+- **Quiz:** 20 rutas metabólicas con 20 preguntas por ruta (400 en total), retroalimentación inmediata y revisión final.
 - **Buscar:** abre la búsqueda global; también puedes pulsar `Ctrl`/`⌘` + `K` o `/`.
 
 Las migas de pan aparecen en las vistas internas. Por ejemplo, en una ficha puedes volver al atlas, a la ruta o al organelo. El pie de página enlaza este manual, el sustento científico y el aviso educativo.
@@ -61,7 +62,7 @@ Las migas de pan aparecen en las vistas internas. Por ejemplo, en una ficha pued
 5. Pulsa una ruta para abrir su diagrama o una enfermedad para ir a la ficha. El botón **Explorar este organelo** abre el explorador con el filtro aplicado.
 6. Para quitar la selección, vuelve a pulsar el organelo seleccionado en la célula. Las píldoras mantienen la selección al pulsarlas de nuevo.
 
-> **Interpretación.** Los organelos de contexto (núcleo, retículo endoplasmático y aparato de Golgi) se incluyen para situar la célula, pero no tienen rutas ni enfermedades propias en esta versión. El panel lo indica explícitamente.
+> **Interpretación.** El núcleo y el retículo endoplasmático se incluyen como contexto celular y no tienen rutas propias en el atlas. El aparato de Golgi alberga el transporte del cobre y la membrana plasmática agrupa el transporte de aminoácidos. El panel lo indica en cada caso.
 
 ---
 
@@ -140,7 +141,23 @@ El pie del buscador ofrece sugerencias: *MCAD · OTC · Gaucher · ABCD1 · β-o
 
 ---
 
-## 8. Rutas directas y atajos
+## 8. Quiz por rutas
+
+El quiz está dividido por ruta metabólica. Hay 20 rutas y cada una ofrece 20 preguntas sobre sus enfermedades: genes, proteínas, herencia, biomarcadores, mecanismos, diagnóstico, seguimiento y tratamiento. En total, el banco genera 400 preguntas.
+
+1. Abre **Quiz por rutas** desde la cabecera, el pie de página o el botón de la portada.
+2. Elige una ruta. La tarjeta indica el organelo, las enfermedades incluidas y el número de preguntas.
+3. Pulsa **Comenzar esta ruta** y selecciona una opción en cada pregunta.
+4. La respuesta se corrige de inmediato y muestra la explicación con un enlace a la ficha de la enfermedad.
+5. Al terminar las 20 preguntas verás la puntuación, el porcentaje y la revisión de todas las respuestas.
+6. Puedes **repetir la misma ruta** o elegir otra. No hay límite de intentos ni registro de datos personales.
+
+> **Glucólisis.** Esta ruta no tiene una enfermedad primaria en el atlas. Para completar sus 20 preguntas se utilizan enfermedades relacionadas con el flujo glucolítico, el glucógeno o la oxidación del piruvato; la interfaz lo indica antes de comenzar.
+
+Las preguntas se construyen de forma determinista a partir de las fichas del atlas. Las preguntas clínicas indican expresamente que deben responderse según la ficha, porque varias enfermedades pueden compartir hallazgos generales. El quiz es una actividad de repaso y no sustituye la evaluación clínica.
+
+---
+## 9. Rutas directas y atajos
 
 Puedes guardar o compartir enlaces directos a cualquier vista. El sitio utiliza rutas con `#`, por lo que funcionan también en un servidor estático.
 
@@ -152,6 +169,8 @@ Puedes guardar o compartir enlaces directos a cualquier vista. El sitio utiliza 
 | β-oxidación con MCAD resaltada | `#/pathway/fa-beta-oxidation/mcad` |
 | Explorador | `#/explorer` |
 | Ficha de Gaucher | `#/disease/gaucher` |
+| Quiz por rutas | `#/quiz` |
+| Quiz del ciclo de la urea | `#/quiz/urea-cycle` |
 | Sustento científico | `#/sustento` |
 | Manual de uso | `#/manual` |
 
@@ -166,9 +185,9 @@ Puedes guardar o compartir enlaces directos a cualquier vista. El sitio utiliza 
 
 ---
 
-## 9. Flujo de estudio recomendado
+## 10. Flujo de estudio recomendado
 
-Si es tu primera vez, sigue este recorrido de diez minutos. Después podrás adaptarlo a tus objetivos.
+Si es tu primera vez, sigue este recorrido guiado. Después podrás adaptarlo a tus objetivos.
 
 1. **Elige un organelo** en la célula. Empieza por la mitocondria, el lisosoma o el peroxisoma.
 2. **Lee sus funciones** y pregunta qué pasaría si una de ellas fallara.
@@ -179,22 +198,24 @@ Si es tu primera vez, sigue este recorrido de diez minutos. Después podrás ada
 7. **Revisa el tratamiento** y relaciónalo con el punto de bloqueo: ¿se restringe un sustrato, se aporta un producto o se reemplaza la enzima?
 8. **Vuelve al atlas** y compara con otra enfermedad del mismo organelo.
 9. **Formula una pregunta** que puedas responder con la ficha y verifica la respuesta.
-10. **Consulta las fuentes** si necesitas profundizar o preparar una exposición.
+10. **Cierra con el quiz de la ruta** para comprobar qué conceptos ya dominas y qué conviene repasar.
+11. **Consulta las fuentes** si necesitas profundizar o preparar una exposición.
 
 > **Ejercicio guiado.** Abre la β-oxidación y selecciona MCAD. Explica por qué la hipoglucemia es hipocetósica, qué biomarcador buscarías en sangre y por qué el manejo se centra en evitar el ayuno.
 
 ---
 
-## 10. Actividades sugeridas
+## 11. Actividades sugeridas
 
 ### Para clase o estudio individual
 
-1. **Del biomarcador a la ruta:** el docente proporciona un biomarcador (por ejemplo, citrulina alta) y el estudiante debe localizar la ruta, la enzima y la enfermedad.
-2. **Dos enfermedades, un organelo:** comparar Gaucher y Fabry, o MCAD y VLCAD, y explicar por qué comparten organelo pero difieren en manifestaciones y tratamiento.
-3. **El tratamiento tiene lógica:** elegir una enfermedad y justificar cada estrategia terapéutica a partir del punto de bloqueo.
-4. **Mapa inverso:** dar el nombre de una enzima y pedir al estudiante que reconstruya la ruta y los biomarcadores.
-5. **Caso clínico breve:** presentar hipoglucemia, hiperamonemia o miocardiopatía y pedir un diagnóstico diferencial usando el explorador.
-6. **Debate sobre límites:** discutir por qué una herramienta educativa no sustituye una guía clínica ni una consulta especializada.
+1. **Quiz por rutas:** elegir la ruta estudiada, completar sus 20 preguntas, revisar la retroalimentación de cada respuesta y repetir el intento tras consultar las fichas enlazadas.
+2. **Del biomarcador a la ruta:** el docente proporciona un biomarcador (por ejemplo, citrulina alta) y el estudiante debe localizar la ruta, la enzima y la enfermedad.
+3. **Dos enfermedades, un organelo:** comparar Gaucher y Fabry, o MCAD y VLCAD, y explicar por qué comparten organelo pero difieren en manifestaciones y tratamiento.
+4. **El tratamiento tiene lógica:** elegir una enfermedad y justificar cada estrategia terapéutica a partir del punto de bloqueo.
+5. **Mapa inverso:** dar el nombre de una enzima y pedir al estudiante que reconstruya la ruta y los biomarcadores.
+6. **Caso clínico breve:** presentar hipoglucemia, hiperamonemia o miocardiopatía y pedir un diagnóstico diferencial usando el explorador.
+7. **Debate sobre límites:** discutir por qué una herramienta educativa no sustituye una guía clínica ni una consulta especializada.
 
 ### Criterios de una buena respuesta
 
@@ -207,7 +228,7 @@ Si es tu primera vez, sigue este recorrido de diez minutos. Después podrás ada
 
 ---
 
-## 11. Problemas frecuentes
+## 12. Problemas frecuentes
 
 | Situación | Qué comprobar |
 |---|---|
@@ -223,7 +244,7 @@ Si el problema persiste, revisa la consola del navegador (F12 → Consola) y ano
 
 ---
 
-## 12. Buenas prácticas y créditos
+## 13. Buenas prácticas y créditos
 
 ### Buenas prácticas de uso
 
@@ -237,7 +258,7 @@ Si el problema persiste, revisa la consola del navegador (F12 → Consola) y ano
 
 Proyecto académico de Bioquímica Aplicada. Contenido elaborado a partir de GeneReviews, OMIM, Orphanet y la bibliografía citada en el sustento científico. Diseño e implementación web con HTML, CSS y JavaScript. Las ilustraciones celulares y los diagramas son esquemas originales en SVG.
 
-**Cómo citar:** Proyecto académico de Bioquímica Aplicada. (2026). *Mapa Interactivo de Errores Innatos del Metabolismo (EIM): Un atlas dinámico e interactivo organizado por organelos* [Recurso educativo web].
+**Cómo citar:** Proyecto académico de Bioquímica Aplicada. (2026). *Metaboloma interactivo : Cartografía de los Errores Innatos del Metabolismo* [Recurso educativo web].
 
 > Recurso educativo. No sustituye la valoración de profesionales sanitarios ni constituye consejo médico.
 

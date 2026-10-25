@@ -1,9 +1,9 @@
-﻿/* ============================================================
-   ATLAS METABÓLICO — Documentación académica
+/* ============================================================
+   METABOLOMA INTERACTIVO — Documentación académica
    Documento de sustento científico y manual de uso
    ============================================================ */
 
-const DOC_VERSION = "1.1";
+const DOC_VERSION = "1.3";
 const DOC_DATE = "octubre de 2026";
 
 const GENERAL_REFERENCES = [
@@ -30,7 +30,7 @@ const SUPPORT_SECTIONS = [
     num: "01",
     title: "Título y ficha técnica",
     body: () => `
-      <p class="doc-title">Mapa Interactivo de Errores Innatos del Metabolismo (EIM): Un atlas dinámico e interactivo organizado por organelos</p>
+      <p class="doc-title">Metaboloma interactivo : Cartografía de los Errores Innatos del Metabolismo</p>
       <p>Este documento acompaña a la aplicación web del mismo nombre y reúne la justificación, los objetivos, el contenido científico, las funcionalidades, la evidencia de funcionamiento, el manual de uso, las limitaciones y las referencias del recurso. Se elaboró como proyecto académico de Bioquímica Aplicada y sigue la estructura solicitada en la guía de la asignatura.</p>
       <div class="doc-facts">
         <div><strong>${ORGANELLES.length}</strong><span>organelos representados</span></div>
@@ -234,14 +234,16 @@ const SUPPORT_SECTIONS = [
             <tr><td>Explorador de enfermedades</td><td>Menú «Explorador»</td><td>Filtra por organelo, categoría y texto libre; muestra el número de resultados.</td></tr>
             <tr><td>Ficha de enfermedad</td><td>Clic en una tarjeta o en un nodo</td><td>Reúne mecanismo, diagnóstico, tratamiento, fuentes y validación.</td></tr>
             <tr><td>Búsqueda global</td><td>Ctrl/Cmd + K, la tecla «/» o el buscador</td><td>Encuentra enfermedades, genes, enzimas, rutas y organelos.</td></tr>
+            <tr><td>Quiz por rutas</td><td>Menú «Quiz», pie de página o botón «Quiz por rutas»</td><td>Ofrece ${QUIZ_PER_ROUTE} preguntas por cada una de las ${QUIZ_ROUTE_META.length} rutas (${QUIZ.length} en total), con retroalimentación inmediata, puntuación y revisión de respuestas.</td></tr>
             <tr><td>Documentación integrada</td><td>Pie de página</td><td>Ofrece este sustento y el manual de uso, con opción de imprimir o descargar.</td></tr>
           </tbody>
         </table>
       </div>
+      <p>El quiz se organiza en una vista de selección de ruta y en una vista independiente por ruta (<code>#/quiz/:id</code>). Cada ruta conserva sus ${QUIZ_PER_ROUTE} preguntas, la retroalimentación inmediata, la puntuación sobre ${QUIZ_PER_ROUTE} y la revisión final. La glucólisis, que no tiene una enfermedad primaria en el atlas, utiliza enfermedades relacionadas con el flujo glucolítico, el glucógeno o la oxidación del piruvato; la interfaz lo advierte antes de comenzar.</p>
       <h3>Rutas directas</h3>
       <p>Las vistas pueden enlazarse o marcarse como favoritas mediante las siguientes rutas:</p>
       <div class="doc-routes">
-        <code>#/atlas</code><code>#/pathways</code><code>#/pathway/urea-cycle</code><code>#/pathway/fa-beta-oxidation/mcad</code><code>#/explorer</code><code>#/disease/gaucher</code><code>#/sustento</code><code>#/manual</code>
+        <code>#/atlas</code><code>#/pathways</code><code>#/pathway/urea-cycle</code><code>#/pathway/fa-beta-oxidation/mcad</code><code>#/explorer</code><code>#/disease/gaucher</code><code>#/quiz</code><code>#/quiz/urea-cycle</code><code>#/sustento</code><code>#/manual</code>
       </div>
       <h3>Características de experiencia de uso</h3>
       <ul>
@@ -258,7 +260,7 @@ const SUPPORT_SECTIONS = [
     num: "09",
     title: "Evidencia del funcionamiento",
     body: () => `
-      <p>Se realizó una validación funcional en un navegador Chromium sobre un servidor estático local. Las pruebas cubrieron la navegación, la selección de organelos, los diagramas, los filtros, la búsqueda y las fichas. La tabla resume los casos comprobados.</p>
+      <p>Se realizó una validación funcional en un navegador Chromium sobre un servidor estático local. Las pruebas cubrieron la navegación, la selección de organelos, los diagramas, los filtros, la búsqueda, las fichas y el quiz por rutas. También se comprobó que las ${QUIZ_ROUTE_META.length} rutas generan exactamente ${QUIZ_PER_ROUTE} preguntas y que cada ruta incluye sus enfermedades. La tabla resume los casos comprobados.</p>
       <div class="doc-table-wrap">
         <table class="doc-table doc-test">
           <thead><tr><th>N.º</th><th>Funcionalidad</th><th>Resultado esperado</th><th>Estado</th></tr></thead>
@@ -273,8 +275,9 @@ const SUPPORT_SECTIONS = [
             <tr><td>08</td><td>Ficha de enfermedad</td><td>Los acordeones abren y cierran; las fuentes y la validación son visibles.</td><td><span class="doc-pass">Verificado</span></td></tr>
             <tr><td>09</td><td>Búsqueda global</td><td>Encuentra por enfermedad, gen, enzima, ruta o metabolito; Enter abre el primer resultado.</td><td><span class="doc-pass">Verificado</span></td></tr>
             <tr><td>10</td><td>Navegación y rutas</td><td>El enrutamiento por hash conserva la vista y el estado de selección esperado.</td><td><span class="doc-pass">Verificado</span></td></tr>
-            <tr><td>11</td><td>Diseño adaptable</td><td>La retícula se reorganiza a una columna y los controles siguen accesibles.</td><td><span class="doc-pass">Verificado en 800 px</span></td></tr>
+            <tr><td>11</td><td>Diseño adaptable</td><td>La retícula se reorganiza a una columna y los controles siguen accesibles.</td><td><span class="doc-pass">Verificado en 800 y 500 px</span></td></tr>
             <tr><td>12</td><td>Impresión de la documentación</td><td>El botón de impresión oculta la navegación y conserva el contenido.</td><td><span class="doc-pass">Verificado</span></td></tr>
+            <tr><td>13</td><td>Selección de ruta del quiz</td><td>Muestra las ${QUIZ_ROUTE_META.length} rutas, sus enfermedades y el acceso a ${QUIZ_PER_ROUTE} preguntas por ruta.</td><td><span class="doc-pass">Verificado</span></td></tr>\n            <tr><td>14</td><td>Quiz por ruta y resultado</td><td>Permite responder ${QUIZ_PER_ROUTE} preguntas, muestra retroalimentación inmediata, calcula el resultado y conserva la revisión de respuestas.</td><td><span class="doc-pass">Verificado</span></td></tr>
           </tbody>
         </table>
       </div>
@@ -292,12 +295,16 @@ const SUPPORT_SECTIONS = [
           <img src="assets/captura-busqueda.png" alt="Buscador global con resultados agrupados por tipo" />
           <figcaption>Búsqueda global: resultados agrupados por enfermedad, ruta y organelo.</figcaption>
         </figure>
+        <figure>
+          <img src="assets/captura-quiz.png" alt="Selección de ruta del quiz con las 20 rutas y 20 preguntas por ruta" />
+          <figcaption>Quiz por rutas: selección de la ruta, número de enfermedades y 20 preguntas por ruta.</figcaption>
+        </figure>
       </div>
       <h3>Observaciones de la validación</h3>
       <ul>
         <li>Las pruebas se ejecutaron con datos locales y sin conexión a servicios externos, salvo la carga de tipografías.</li>
-        <li>La comprobación en 800 px confirma la reorganización; queda pendiente una auditoría con lector de pantalla y una prueba en dispositivos móviles reales.</li>
-        <li>No se encontraron errores de JavaScript en la consola durante los recorridos principales.</li>
+        <li>La comprobación en 1440, 1024, 800 y 500 px confirma la reorganización; queda pendiente una auditoría con lector de pantalla y una prueba en dispositivos móviles reales.</li>
+        <li>No se encontraron errores de JavaScript en la consola durante los recorridos principales, incluida la validación de las ${QUIZ_ROUTE_META.length} rutas y el recorrido completo de un quiz de ${QUIZ_PER_ROUTE} preguntas.</li>
         <li>Las capturas corresponden al entorno de prueba y pueden variar ligeramente respecto de la versión final.</li>
       </ul>`
   },
@@ -315,6 +322,7 @@ const SUPPORT_SECTIONS = [
         <li><strong>Selecciona un nodo:</strong> el inspector explica el paso y enlaza con la ficha de la enfermedad cuando corresponde.</li>
         <li><strong>Consulta la ficha:</strong> despliega mecanismo, diagnóstico, tratamiento y fuentes. Usa «Ver en el mapa metabólico» para volver al punto de bloqueo.</li>
         <li><strong>Filtra o busca:</strong> el explorador permite combinar organelo, categoría y texto; la búsqueda global acepta genes, enzimas, rutas y metabolitos.</li>
+        <li><strong>Cierra con el quiz de la ruta:</strong> elige una de las ${QUIZ_ROUTE_META.length} rutas y responde sus ${QUIZ_PER_ROUTE} preguntas con retroalimentación inmediata.</li>
         <li><strong>Profundiza:</strong> abre este sustento científico o el manual desde el pie de página. Puedes imprimir o guardar en PDF.</li>
       </ol>
       <h3>Atajos</h3>
@@ -353,12 +361,12 @@ const SUPPORT_SECTIONS = [
       </ul>
       <h3>Trabajo futuro</h3>
       <ol class="doc-numbered">
-        <li>Incorporar más enfermedades y completar los organelos de contexto con rutas propias.</li>
+        <li>Incorporar más enfermedades y completar el núcleo y el retículo endoplasmático con rutas propias.</li>
         <li>Añadir valores de referencia configurables por laboratorio y unidades.</li>
-        <li>Incluir un modo de autoevaluación con preguntas y casos clínicos.</li>
+        <li>Añadir casos clínicos integrados y preguntas de razonamiento que complementen el banco actual de 400 preguntas.</li>
         <li>Realizar una auditoría de accesibilidad y pruebas con usuarios del público objetivo.</li>
         <li>Versionar el contenido y registrar la fecha de la última revisión de cada ficha.</li>
-        <li>Publicar el sitio en un alojamiento estático y ofrecer una versión imprimible del atlas.</li>
+        <li>Mantener publicado el sitio y actualizar el contenido con control de versiones.</li>
       </ol>
       <div class="doc-callout">
         <strong>Uso responsable.</strong> Si el recurso se utiliza en un contexto clínico o educativo formal, debe acompañarse de la guía docente, declarar sus limitaciones y remitir a las fuentes primarias. La información no reemplaza el juicio profesional.
@@ -374,7 +382,7 @@ const SUPPORT_SECTIONS = [
       <h3>Referencias por enfermedad</h3>
       ${docDiseaseReferences()}
       <h3>Cómo citar este recurso</h3>
-      <p class="doc-citation">Proyecto académico de Bioquímica Aplicada. (2026). <em>Mapa Interactivo de Errores Innatos del Metabolismo (EIM): Un atlas dinámico e interactivo organizado por organelos</em> [Recurso educativo web].</p>
+      <p class="doc-citation">Proyecto académico de Bioquímica Aplicada. (2026). <em>Metaboloma interactivo : Cartografía de los Errores Innatos del Metabolismo</em> [Recurso educativo web].</p>
       <p class="mini-note">Las referencias se consultaron en octubre de 2026. Las bases de datos GeneReviews, OMIM y Orphanet se actualizan periódicamente; verifica la versión vigente antes de reutilizar el contenido.</p>`
   }
 ];
@@ -421,11 +429,12 @@ const MANUAL_SECTIONS = [
     num: "02",
     title: "Navegación general",
     body: () => `
-      <p>La cabecera se mantiene visible y contiene la marca, tres accesos principales y el buscador:</p>
+      <p>La cabecera se mantiene visible y contiene la marca, cuatro accesos principales y el buscador:</p>
       <ul>
         <li><strong>Atlas celular:</strong> vista principal con la célula interactiva.</li>
         <li><strong>Mapa metabólico:</strong> listado de las ${PATHWAYS.length} rutas agrupadas por organelo.</li>
         <li><strong>Explorador:</strong> catálogo filtrable de las ${DISEASES.length} enfermedades.</li>
+        <li><strong>Quiz:</strong> ${QUIZ_ROUTE_META.length} rutas con ${QUIZ_PER_ROUTE} preguntas por ruta (${QUIZ.length} en total) y retroalimentación inmediata.</li>
         <li><strong>Buscar:</strong> abre la búsqueda global; también puedes pulsar <kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>K</kbd> o <kbd>/</kbd>.</li>
       </ul>
       <p>Las migas de pan aparecen en las vistas internas. Por ejemplo, en una ficha puedes volver al atlas, a la ruta o al organelo. El pie de página enlaza este manual, el sustento científico y el aviso educativo.</p>
@@ -543,8 +552,25 @@ const MANUAL_SECTIONS = [
       <p>El pie del buscador ofrece sugerencias: <em>MCAD · OTC · Gaucher · ABCD1 · β-oxidación · amonio</em>. Son un buen punto de partida si no sabes qué término usar.</p>`
   },
   {
-    id: "rutas",
+    id: "quiz",
     num: "08",
+    title: "Quiz por rutas",
+    body: () => `
+      <p>El quiz está dividido por ruta metabólica. Hay ${QUIZ_ROUTE_META.length} rutas y cada una ofrece ${QUIZ_PER_ROUTE} preguntas sobre sus enfermedades: genes, proteínas, herencia, biomarcadores, mecanismos, diagnóstico, seguimiento y tratamiento. En total, el banco genera ${QUIZ.length} preguntas.</p>
+      <ol class="doc-numbered">
+        <li>Abre <strong>Quiz por rutas</strong> desde la cabecera, el pie de página o el botón de la portada.</li>
+        <li>Elige una ruta. La tarjeta indica el organelo, las enfermedades incluidas y el número de preguntas.</li>
+        <li>Pulsa <strong>Comenzar esta ruta</strong> y selecciona una opción en cada pregunta.</li>
+        <li>La respuesta se corrige de inmediato y muestra la explicación con un enlace a la ficha de la enfermedad.</li>
+        <li>Al terminar las ${QUIZ_PER_ROUTE} preguntas verás la puntuación, el porcentaje y la revisión de todas las respuestas.</li>
+        <li>Puedes <strong>repetir la misma ruta</strong> o elegir otra. No hay límite de intentos ni registro de datos personales.</li>
+      </ol>
+      <div class="doc-callout"><strong>Glucólisis.</strong> Esta ruta no tiene una enfermedad primaria en el atlas. Para completar sus ${QUIZ_PER_ROUTE} preguntas se utilizan enfermedades relacionadas con el flujo glucolítico, el glucógeno o la oxidación del piruvato; la interfaz lo indica antes de comenzar.</div>
+      <p>Las preguntas se construyen de forma determinista a partir de las fichas del atlas. Las preguntas clínicas indican expresamente que deben responderse según la ficha, porque varias enfermedades pueden compartir hallazgos generales. El quiz es una actividad de repaso y no sustituye la evaluación clínica.</p>`
+  },
+  {
+    id: "rutas",
+    num: "09",
     title: "Rutas directas y atajos",
     body: () => `
       <p>Puedes guardar o compartir enlaces directos a cualquier vista. El sitio utiliza rutas con <code>#</code>, por lo que funcionan también en un servidor estático.</p>
@@ -558,6 +584,7 @@ const MANUAL_SECTIONS = [
             <tr><td>β-oxidación con MCAD resaltada</td><td><code>#/pathway/fa-beta-oxidation/mcad</code></td></tr>
             <tr><td>Explorador</td><td><code>#/explorer</code></td></tr>
             <tr><td>Ficha de Gaucher</td><td><code>#/disease/gaucher</code></td></tr>
+            <tr><td>Quiz por rutas</td><td><code>#/quiz</code></td></tr>\n            <tr><td>Quiz del ciclo de la urea</td><td><code>#/quiz/urea-cycle</code></td></tr>
             <tr><td>Sustento científico</td><td><code>#/sustento</code></td></tr>
             <tr><td>Manual de uso</td><td><code>#/manual</code></td></tr>
           </tbody>
@@ -578,10 +605,10 @@ const MANUAL_SECTIONS = [
   },
   {
     id: "flujo",
-    num: "09",
+    num: "10",
     title: "Flujo de estudio recomendado",
     body: () => `
-      <p>Si es tu primera vez, sigue este recorrido de diez minutos. Después podrás adaptarlo a tus objetivos.</p>
+      <p>Si es tu primera vez, sigue este recorrido guiado. Después podrás adaptarlo a tus objetivos.</p>
       <ol class="doc-numbered">
         <li><strong>Elige un organelo</strong> en la célula. Empieza por la mitocondria, el lisosoma o el peroxisoma.</li>
         <li><strong>Lee sus funciones</strong> y pregunta qué pasaría si una de ellas fallara.</li>
@@ -592,17 +619,19 @@ const MANUAL_SECTIONS = [
         <li><strong>Revisa el tratamiento</strong> y relaciónalo con el punto de bloqueo: ¿se restringe un sustrato, se aporta un producto o se reemplaza la enzima?</li>
         <li><strong>Vuelve al atlas</strong> y compara con otra enfermedad del mismo organelo.</li>
         <li><strong>Formula una pregunta</strong> que puedas responder con la ficha y verifica la respuesta.</li>
+        <li><strong>Cierra con el quiz de la ruta</strong> para comprobar qué conceptos ya dominas y qué conviene repasar.</li>
         <li><strong>Consulta las fuentes</strong> si necesitas profundizar o preparar una exposición.</li>
       </ol>
       <div class="doc-callout"><strong>Ejercicio guiado.</strong> Abre la β-oxidación y selecciona MCAD. Explica por qué la hipoglucemia es hipocetósica, qué biomarcador buscarías en sangre y por qué el manejo se centra en evitar el ayuno.</div>`
   },
   {
     id: "actividades",
-    num: "10",
+    num: "11",
     title: "Actividades sugeridas",
     body: () => `
       <h3>Para clase o estudio individual</h3>
       <ol class="doc-numbered">
+        <li><strong>Quiz por rutas:</strong> elegir la ruta estudiada, completar sus ${QUIZ_PER_ROUTE} preguntas, revisar la retroalimentación de cada respuesta y repetir el intento tras consultar las fichas enlazadas.</li>
         <li><strong>Del biomarcador a la ruta:</strong> el docente proporciona un biomarcador (por ejemplo, citrulina alta) y el estudiante debe localizar la ruta, la enzima y la enfermedad.</li>
         <li><strong>Dos enfermedades, un organelo:</strong> comparar Gaucher y Fabry, o MCAD y VLCAD, y explicar por qué comparten organelo pero difieren en manifestaciones y tratamiento.</li>
         <li><strong>El tratamiento tiene lógica:</strong> elegir una enfermedad y justificar cada estrategia terapéutica a partir del punto de bloqueo.</li>
@@ -622,7 +651,7 @@ const MANUAL_SECTIONS = [
   },
   {
     id: "problemas",
-    num: "11",
+    num: "12",
     title: "Problemas frecuentes",
     body: () => `
       <div class="doc-table-wrap">
@@ -643,7 +672,7 @@ const MANUAL_SECTIONS = [
   },
   {
     id: "creditos",
-    num: "12",
+    num: "13",
     title: "Buenas prácticas y créditos",
     body: () => `
       <h3>Buenas prácticas de uso</h3>

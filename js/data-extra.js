@@ -1,5 +1,5 @@
 /* ============================================================
-   ATLAS METABÓLICO — Rutas adicionales en preparación
+   METABOLOMA INTERACTIVO — Rutas adicionales en preparación
    No se cargan en index.html: sus enfermedades aún no forman
    parte de la versión estable de 40 fichas integradas.
    ============================================================ */

@@ -1,4 +1,4 @@
-﻿# Bibliografía recopilada para el Atlas Metabólico de EIM
+﻿# Bibliografía recopilada para Metaboloma interactivo
 
 Fecha: octubre de 2026
 Alcance: 50 enfermedades representativas de errores innatos del metabolismo

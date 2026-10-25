@@ -1,5 +1,5 @@
 /* ============================================================
-   ATLAS METABÓLICO — Fichas adicionales en preparación
+   METABOLOMA INTERACTIVO — Fichas adicionales en preparación
    No se cargan en index.html: sus rutas y organelos aún no están
    integrados en data.js. Se conservan para una ampliación futura.
    ============================================================ */

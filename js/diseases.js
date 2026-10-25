@@ -1,5 +1,5 @@
 /* ============================================================
-   ATLAS METABÓLICO — Fichas de enfermedades
+   METABOLOMA INTERACTIVO — Fichas de enfermedades
    Versión estable: 40 enfermedades integradas en rutas y organelos.
    ============================================================ */
 

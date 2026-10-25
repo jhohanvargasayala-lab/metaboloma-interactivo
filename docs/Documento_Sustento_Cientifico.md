@@ -1,4 +1,4 @@
-﻿# Mapa Interactivo de Errores Innatos del Metabolismo (EIM)
+# Metaboloma interactivo : Cartografía de los Errores Innatos del Metabolismo
 ## Un atlas dinámico e interactivo organizado por organelos
 
 **Documento de sustento científico**
@@ -9,7 +9,7 @@
 - **Público secundario:** docentes, profesionales de la salud y divulgadores científicos.
 - **Alcance:** 8 organelos, 20 rutas metabólicas, 40 enfermedades y 120 referencias específicas.
 - **Tecnologías:** HTML5, CSS3 y JavaScript sin framework, sin compilación y sin backend.
-- **Versión y fecha:** 1.1 · octubre de 2026.
+- **Versión y fecha:** 1.3 · octubre de 2026.
 - **Carácter:** recurso educativo; no es un dispositivo médico ni sustituye la valoración clínica.
 
 > **Aviso de uso responsable.** La información está simplificada con fines de aprendizaje. No debe utilizarse para autodiagnóstico, para tomar decisiones terapéuticas ni para sustituir guías clínicas, la valoración de profesionales sanitarios o la confirmación bioquímica y genética de cada caso.
@@ -18,7 +18,7 @@
 
 ## 1. Título de la herramienta
 
-**Mapa Interactivo de Errores Innatos del Metabolismo (EIM): Un atlas dinámico e interactivo organizado por organelos.**
+**Metaboloma interactivo : Cartografía de los Errores Innatos del Metabolismo.**
 
 La herramienta es una aplicación web que organiza enfermedades metabólicas hereditarias representativas según el organelo celular en el que ocurre la ruta alterada. Cada ruta conduce a una ficha con el mecanismo bioquímico, los biomarcadores de diagnóstico en sangre u orina, el tratamiento metabólico o dietético y las fuentes consultadas.
 
@@ -276,11 +276,14 @@ La célula y los diagramas de ruta son ilustraciones esquemáticas originales, d
 | Explorador de enfermedades | Menú «Explorador» | Filtra por organelo, categoría y texto libre. |
 | Ficha de enfermedad | Clic en una tarjeta o nodo | Reúne mecanismo, diagnóstico, tratamiento, fuentes y validación. |
 | Búsqueda global | Ctrl/Cmd + K, tecla «/» o buscador | Encuentra enfermedades, genes, enzimas, rutas y organelos. |
+| Quiz por rutas | Menú «Quiz», pie de página o botón «Quiz por rutas» | Ofrece 20 preguntas por cada una de las 20 rutas (400 en total), con retroalimentación inmediata, puntuación y revisión de respuestas. |
 | Documentación integrada | Pie de página | Ofrece el sustento y el manual, con opción de imprimir o descargar. |
+
+El quiz se organiza en una vista de selección de ruta y en una vista independiente por ruta (`#/quiz/:id`). Cada ruta conserva sus 20 preguntas, la retroalimentación inmediata, la puntuación sobre 20 y la revisión final. La glucólisis, que no tiene una enfermedad primaria en el atlas, utiliza enfermedades relacionadas con el flujo glucolítico, el glucógeno o la oxidación del piruvato; la interfaz lo advierte antes de comenzar.
 
 ### Rutas directas
 
-`#/atlas` · `#/pathways` · `#/pathway/urea-cycle` · `#/pathway/fa-beta-oxidation/mcad` · `#/explorer` · `#/disease/gaucher` · `#/sustento` · `#/manual`
+`#/atlas` · `#/pathways` · `#/pathway/urea-cycle` · `#/pathway/fa-beta-oxidation/mcad` · `#/explorer` · `#/disease/gaucher` · `#/quiz` · `#/quiz/urea-cycle` · `#/sustento` · `#/manual`
 
 ### Características de experiencia de uso
 
@@ -295,7 +298,7 @@ La célula y los diagramas de ruta son ilustraciones esquemáticas originales, d
 
 ## 9. Evidencia del funcionamiento
 
-Se realizó una validación funcional en un navegador Chromium sobre un servidor estático local. Las pruebas cubrieron la navegación, la selección de organelos, los diagramas, los filtros, la búsqueda y las fichas.
+Se realizó una validación funcional en un navegador Chromium sobre un servidor estático local. Las pruebas cubrieron la navegación, la selección de organelos, los diagramas, los filtros, la búsqueda, las fichas y el quiz por rutas. También se comprobó que las 20 rutas generan exactamente 20 preguntas y que cada ruta incluye sus enfermedades.
 
 | N.º | Funcionalidad | Resultado esperado | Estado |
 |---|---|---|---|
@@ -309,8 +312,10 @@ Se realizó una validación funcional en un navegador Chromium sobre un servidor
 | 08 | Ficha de enfermedad | Los acordeones abren y cierran; las fuentes son visibles. | Verificado |
 | 09 | Búsqueda global | Encuentra por enfermedad, gen, enzima, ruta o metabolito. | Verificado |
 | 10 | Navegación y rutas | El enrutamiento por hash conserva la vista esperada. | Verificado |
-| 11 | Diseño adaptable | La retícula se reorganiza a una columna. | Verificado en 800 px |
+| 11 | Diseño adaptable | La retícula se reorganiza a una columna. | Verificado en 800 y 500 px |
 | 12 | Impresión de la documentación | El botón de impresión oculta la navegación y conserva el contenido. | Verificado |
+| 13 | Selección de ruta del quiz | Muestra las 20 rutas, sus enfermedades y el acceso a 20 preguntas por ruta. | Verificado |
+| 14 | Quiz por ruta y resultado | Permite responder 20 preguntas, muestra retroalimentación inmediata, calcula el resultado y conserva la revisión de respuestas. | Verificado |
 
 ### Capturas de las funciones principales
 
@@ -319,12 +324,13 @@ Las capturas se incluyen en la vista `#/sustento` del sitio y en la carpeta `ass
 - `assets/captura-atlas.png`: atlas celular con la célula interactiva y el panel contextual.
 - `assets/captura-explorador.png`: explorador con filtros y tarjetas de enfermedad.
 - `assets/captura-busqueda.png`: búsqueda global con resultados agrupados.
+- `assets/captura-quiz.png`: selección de ruta del quiz, con las 20 rutas y 20 preguntas por ruta.
 
 ### Observaciones de la validación
 
 - Las pruebas se ejecutaron con datos locales y sin conexión a servicios externos, salvo la carga de tipografías.
-- La comprobación en 800 px confirma la reorganización; queda pendiente una auditoría con lector de pantalla y una prueba en dispositivos móviles reales.
-- No se encontraron errores de JavaScript en la consola durante los recorridos principales.
+- La comprobación en 1440, 1024, 800 y 500 px confirma la reorganización; queda pendiente una auditoría con lector de pantalla y una prueba en dispositivos móviles reales.
+- No se encontraron errores de JavaScript en la consola durante los recorridos principales, incluida la validación de las 20 rutas y el recorrido completo de un quiz de 20 preguntas.
 - Las capturas corresponden al entorno de prueba y pueden variar ligeramente respecto de la versión final.
 
 ---
@@ -340,7 +346,8 @@ El manual completo está disponible en `#/manual` y en `docs/Manual_de_Uso.md`. 
 5. **Selecciona un nodo:** el inspector explica el paso y enlaza con la ficha de la enfermedad cuando corresponde.
 6. **Consulta la ficha:** despliega mecanismo, diagnóstico, tratamiento y fuentes. Usa «Ver en el mapa metabólico» para volver al punto de bloqueo.
 7. **Filtra o busca:** el explorador permite combinar organelo, categoría y texto; la búsqueda global acepta genes, enzimas, rutas y metabolitos.
-8. **Profundiza:** abre el sustento científico o el manual desde el pie de página. Puedes imprimir o guardar en PDF.
+8. **Cierra con el quiz de la ruta:** elige una de las 20 rutas y responde sus 20 preguntas con retroalimentación inmediata.
+9. **Profundiza:** abre el sustento científico o el manual desde el pie de página. Puedes imprimir o guardar en PDF.
 
 ### Atajos
 
@@ -363,7 +370,7 @@ El manual completo está disponible en `#/manual` y en `docs/Manual_de_Uso.md`. 
 - **Cobertura parcial:** incluye 40 enfermedades representativas de más de un millar de EIM. Algunas entidades se agrupan y otras quedan fuera.
 - **Contenido simplificado:** los mecanismos se presentan con un nivel didáctico; no se detallan isoformas, modificadores genéticos, fenotipos intermedios ni todas las complicaciones.
 - **Sin valores de corte:** los biomarcadores se enumeran, pero no se incluyen intervalos de referencia ni unidades, porque dependen del laboratorio y de la edad.
-- **Organelos de contexto:** núcleo, retículo endoplasmático y aparato de Golgi se muestran para orientar la célula, pero no tienen rutas ni enfermedades propias en esta versión.
+- **Organelos de contexto:** el núcleo y el retículo endoplasmático se muestran para orientar la célula; no tienen rutas propias en el atlas. El aparato de Golgi alberga el transporte del cobre y la membrana plasmática agrupa el transporte de aminoácidos.
 - **Datos estáticos:** la información se actualiza manualmente; no existe una base de datos ni una API que sincronice cambios.
 - **Idioma:** el contenido está en español y no se ha validado en otros idiomas.
 - **Accesibilidad:** se cuidaron el contraste, el foco y las etiquetas, pero falta una auditoría formal con lectores de pantalla y pruebas con usuarios.
@@ -372,12 +379,12 @@ El manual completo está disponible en `#/manual` y en `docs/Manual_de_Uso.md`. 
 
 ### Trabajo futuro
 
-1. Incorporar más enfermedades y completar los organelos de contexto con rutas propias.
+1. Incorporar más enfermedades y completar el núcleo y el retículo endoplasmático con rutas propias.
 2. Añadir valores de referencia configurables por laboratorio y unidades.
-3. Incluir un modo de autoevaluación con preguntas y casos clínicos.
+3. Añadir casos clínicos integrados y preguntas de razonamiento que complementen el banco actual de 400 preguntas.
 4. Realizar una auditoría de accesibilidad y pruebas con usuarios del público objetivo.
 5. Versionar el contenido y registrar la fecha de la última revisión de cada ficha.
-6. Publicar el sitio en un alojamiento estático y ofrecer una versión imprimible del atlas.
+6. Mantener publicado el sitio y actualizar el contenido con control de versiones.
 
 > **Uso responsable.** Si el recurso se utiliza en un contexto clínico o educativo formal, debe acompañarse de la guía docente, declarar sus limitaciones y remitir a las fuentes primarias. La información no reemplaza el juicio profesional.
 
@@ -409,7 +416,7 @@ Consulta la tabla del apartado 7 y las fuentes específicas de cada ficha en el 
 
 ### Cómo citar este recurso
 
-Proyecto académico de Bioquímica Aplicada. (2026). *Mapa Interactivo de Errores Innatos del Metabolismo (EIM): Un atlas dinámico e interactivo organizado por organelos* [Recurso educativo web].
+Proyecto académico de Bioquímica Aplicada. (2026). *Metaboloma interactivo : Cartografía de los Errores Innatos del Metabolismo* [Recurso educativo web].
 
 > Las referencias se consultaron en octubre de 2026. Las bases de datos GeneReviews, OMIM y Orphanet se actualizan periódicamente; verifica la versión vigente antes de reutilizar el contenido.
 

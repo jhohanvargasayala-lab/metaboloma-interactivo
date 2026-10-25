@@ -1,6 +1,9 @@
 /* ============================================================
-   ATLAS METABÓLICO — Datos de organelos y rutas
+   METABOLOMA INTERACTIVO — Datos de organelos y rutas
    ============================================================ */
+
+const SITE_NAME = "Metaboloma interactivo";
+const SITE_FULL_NAME = "Metaboloma interactivo : Cartografía de los Errores Innatos del Metabolismo";
 
 const ORGANELLES = [
   {

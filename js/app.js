@@ -1,5 +1,5 @@
 /* ============================================================
-   ATLAS METABÓLICO — Aplicación
+   METABOLOMA INTERACTIVO — Aplicación
    ============================================================ */
 
 const app = document.getElementById("app");
@@ -25,7 +25,7 @@ function icon(name, cls = "") {
 
 /* ---------------- Cabecera / navegación ---------------- */
 function setActiveNav(route) {
-  const map = { atlas: "atlas", pathways: "pathways", pathway: "pathways", explorer: "explorer", disease: "explorer", sustento: "", manual: "" };
+  const map = { atlas: "atlas", pathways: "pathways", pathway: "pathways", explorer: "explorer", disease: "explorer", quiz: "quiz", sustento: "", manual: "" };
   const active = map[route] !== undefined ? map[route] : "atlas";
   document.querySelectorAll(".main-nav button, .mobile-nav button").forEach((btn) => {
     const isActive = btn.dataset.route === active;
@@ -305,13 +305,17 @@ function renderAtlas() {
     <div class="container">
       <div class="page-head">
         <span class="eyebrow">${icon("atlas")} Vista principal</span>
-        <h1>Mapa Interactivo de Errores Innatos del Metabolismo (EIM)</h1>
+        <h1 class="hero-title">${SITE_NAME} : <span class="hero-title-sub">Cartografía de los Errores Innatos del Metabolismo</span></h1>
         <p class="lede">Un atlas dinámico e interactivo organizado por <strong>organelos</strong>. Explora la célula, abre una vía metabólica y consulta las <strong>enzimas mutadas</strong>, los <strong>biomarcadores de diagnóstico</strong> en sangre u orina y el <strong>tratamiento metabólico o dietario</strong>.</p>
         <div class="hero-stats" aria-label="Alcance del atlas">
           <div><strong>${ORGANELLES.length}</strong><span>organelos</span></div>
           <div><strong>${PATHWAYS.length}</strong><span>rutas metabólicas</span></div>
           <div><strong>${DISEASES.length}</strong><span>enfermedades con ficha</span></div>
           <div><strong>${DISEASES.reduce((n, d) => n + d.sources.length, 0)}</strong><span>referencias citadas</span></div>
+        </div>
+        <div class="hero-cta">
+          <a class="btn primary" href="#/quiz">${icon("quiz")} Quiz por rutas</a>
+          <span>${QUIZ_PER_ROUTE} preguntas por ruta · ${QUIZ.length} en total</span>
         </div>
       </div>
 
@@ -984,7 +988,7 @@ function renderDocPage(kind) {
   const eyebrow = isSupport ? "Documentación académica" : "Guía de uso";
   const lede = isSupport
     ? "Justificación, objetivos, contenido científico, funcionalidades, evidencia de funcionamiento, limitaciones y referencias de la herramienta."
-    : "Guía paso a paso para recorrer el atlas, interpretar los diagramas, filtrar enfermedades y consultar las fichas sin ayuda externa.";
+    : "Guía paso a paso para recorrer el metaboloma, interpretar los diagramas, filtrar enfermedades, consultar las fichas y usar el quiz por rutas sin ayuda externa.";
   const download = isSupport ? "docs/Documento_Sustento_Cientifico.md" : "docs/Manual_de_Uso.md";
   const downloadName = isSupport ? "Documento_Sustento_Cientifico.md" : "Manual_de_Uso.md";
   const otherHref = isSupport ? "#/manual" : "#/sustento";
@@ -1071,6 +1075,302 @@ function renderDocPage(kind) {
   }
 }
 
+/* ---------------- Vista: quiz por rutas ---------------- */
+let quizState = { routeId: null, started: false, index: 0, answers: [], completed: false };
+let activeQuiz = [];
+let activeQuizRoute = null;
+
+function resetQuizState(started = false) {
+  quizState.started = started;
+  quizState.index = 0;
+  quizState.answers = new Array(activeQuiz.length).fill(null);
+  quizState.completed = false;
+}
+
+function quizScore() {
+  return quizState.answers.reduce((total, answer, index) =>
+    total + (answer === activeQuiz[index]?.correct ? 1 : 0), 0);
+}
+
+function focusQuizElement(id) {
+  const element = document.getElementById(id);
+  if (element) element.focus();
+}
+
+function setActiveQuizRoute(routeId) {
+  const route = QUIZ_ROUTE_META.find((item) => item.id === routeId);
+  if (!route || !route.questions.length) return null;
+  if (quizState.routeId !== route.id) {
+    quizState.routeId = route.id;
+    activeQuiz = route.questions;
+    activeQuizRoute = route;
+    resetQuizState(false);
+  } else {
+    activeQuiz = route.questions;
+    activeQuizRoute = route;
+  }
+  return route;
+}
+
+function clearActiveQuiz() {
+  quizState.routeId = null;
+  quizState.started = false;
+  quizState.index = 0;
+  quizState.answers = [];
+  quizState.completed = false;
+  activeQuiz = [];
+  activeQuizRoute = null;
+}
+
+function renderQuiz(routeMeta = null) {
+  if (!routeMeta) {
+    clearActiveQuiz();
+  } else if (!setActiveQuizRoute(routeMeta.id)) {
+    location.hash = "#/quiz";
+    return;
+  }
+
+  const route = routeMeta ? activeQuizRoute : null;
+  const diseaseCount = route ? route.diseases.length : 0;
+  const diseaseLabel = diseaseCount === 1
+    ? "la enfermedad de esta ruta"
+    : `las ${diseaseCount} enfermedades ${route?.relatedOnly ? "relacionadas" : "de esta ruta"}`;
+  const lede = route
+    ? `${QUIZ_PER_ROUTE} preguntas de opción múltiple sobre ${diseaseLabel}, con retroalimentación inmediata y revisión final.`
+    : `Elige una de las ${QUIZ_ROUTE_META.length} rutas metabólicas. Cada una tiene ${QUIZ_PER_ROUTE} preguntas sobre sus enfermedades, con retroalimentación inmediata.`;
+
+  app.innerHTML = `
+  <div class="page quiz-page">
+    <div class="container quiz-container">
+      <div class="page-head">
+        <span class="eyebrow">${icon("quiz")} Actividad de retroalimentación</span>
+        ${route ? `<a class="quiz-back-link" href="#/quiz">${icon("arrow-left")} Ver todas las rutas</a>` : ""}
+        <h1>${route ? `Quiz: ${route.name}` : "Quiz por rutas"}</h1>
+        <p class="lede">${lede}</p>
+      </div>
+      <div id="quizMount"></div>
+    </div>
+  </div>`;
+
+  if (route) renderQuizContent();
+  else renderQuizLanding();
+}
+
+function renderQuizLanding() {
+  const mount = document.getElementById("quizMount");
+  if (!mount) return;
+
+  const cards = QUIZ_ROUTE_META.map((route) => {
+    const organelle = ORGANELLE_BY_ID[route.organelleId];
+    const names = route.diseases.map((disease) => disease.name);
+    const preview = names.slice(0, 3).join(" · ") + (names.length > 3 ? ` · +${names.length - 3} más` : "");
+    return `
+      <a class="card quiz-route-card" href="#/quiz/${route.id}">
+        <div class="quiz-route-top">
+          <span class="quiz-route-org"><span class="dot" style="background:${organelle?.color || "var(--turquoise)"}"></span>${organelle?.shortName || "Ruta"}</span>
+          <span class="quiz-route-count">${QUIZ_PER_ROUTE}</span>
+        </div>
+        <h2>${route.name}</h2>
+        <p>${preview || "Enfermedades relacionadas con esta ruta"}</p>
+        ${route.relatedOnly ? `<span class="quiz-route-flag">Enfermedades relacionadas</span>` : ""}
+        <span class="quiz-route-open">${icon("arrow-right")} Comenzar quiz</span>
+      </a>`;
+  }).join("");
+
+  mount.innerHTML = `
+    <section class="card quiz-landing" aria-labelledby="quizRoutesTitle">
+      <div class="quiz-landing-head">
+        <div>
+          <span class="eyebrow">${QUIZ_ROUTE_META.length} rutas · ${QUIZ_PER_ROUTE} preguntas por ruta</span>
+          <h2 id="quizRoutesTitle">Elige una ruta metabólica</h2>
+          <p>Cada ruta reúne ${QUIZ_PER_ROUTE} preguntas sobre sus enfermedades: genes, proteínas, biomarcadores, mecanismos, diagnóstico y tratamiento. Las preguntas se generan a partir de las fichas del atlas.</p>
+        </div>
+        <div class="quiz-landing-stats" aria-label="Alcance del quiz">
+          <div><strong>${QUIZ_ROUTE_META.length}</strong><span>rutas</span></div>
+          <div><strong>${QUIZ_PER_ROUTE}</strong><span>preguntas por ruta</span></div>
+          <div><strong>${QUIZ.length}</strong><span>preguntas en total</span></div>
+        </div>
+      </div>
+    </section>
+    <div class="quiz-route-grid">${cards}</div>
+    <p class="quiz-note">${icon("info")} La glucólisis no tiene una enfermedad primaria en el atlas; su quiz utiliza enfermedades que alteran el flujo glucolítico, el glucógeno o la oxidación del piruvato. Actividad educativa: no sustituye la evaluación clínica.</p>`;
+}
+
+function renderQuizIntro() {
+  const route = activeQuizRoute;
+  const diseases = route.diseases;
+  const diseaseTags = diseases
+    .map((disease) => `<span class="quiz-disease-tag">${disease.name}</span>`)
+    .join("");
+  return `
+    <section class="card quiz-intro quiz-route-intro" aria-labelledby="quizIntroTitle">
+      <div class="quiz-intro-icon">${icon("quiz")}</div>
+      <span class="eyebrow">${QUIZ_PER_ROUTE} preguntas · ${diseases.length} ${diseases.length === 1 ? "enfermedad" : "enfermedades"}</span>
+      <h2 id="quizIntroTitle">Pon a prueba esta ruta</h2>
+      <p>Responde ${QUIZ_PER_ROUTE} preguntas sobre las enfermedades de esta ruta. Cada respuesta recibe retroalimentación inmediata y un enlace a la ficha correspondiente.</p>
+      <div class="quiz-disease-list" aria-label="Enfermedades incluidas">${diseaseTags}</div>
+      ${route.relatedOnly ? `<p class="quiz-related-note">${icon("info")} Esta ruta no tiene una enfermedad primaria en el atlas. Las preguntas se centran en enfermedades relacionadas con su flujo metabólico.</p>` : ""}
+      <div class="quiz-intro-stats">
+        <div><strong>${QUIZ_PER_ROUTE}</strong><span>preguntas</span></div>
+        <div><strong>${diseases.length}</strong><span>${diseases.length === 1 ? "enfermedad" : "enfermedades"}</span></div>
+        <div><strong>∞</strong><span>intentos</span></div>
+      </div>
+      <div class="quiz-intro-actions">
+        <button class="btn primary" type="button" data-quiz-start>${icon("bolt")} Comenzar esta ruta</button>
+        <a class="btn" href="#/pathway/${route.id}">${icon("map")} Ver la ruta</a>
+        <a class="btn" href="#/quiz">${icon("arrow-left")} Elegir otra ruta</a>
+      </div>
+      <p class="quiz-note">${icon("info")} Las preguntas se basan en las fichas del atlas. Actividad educativa: no sustituye la evaluación clínica ni el estudio de las fuentes originales.</p>
+    </section>`;
+}
+
+function renderQuizContent() {
+  const mount = document.getElementById("quizMount");
+  if (!mount || !activeQuizRoute) return;
+
+  if (!quizState.started) {
+    mount.innerHTML = renderQuizIntro();
+    return;
+  }
+
+  if (quizState.completed) {
+    mount.innerHTML = renderQuizResult();
+    return;
+  }
+
+  const total = activeQuiz.length;
+  const question = activeQuiz[quizState.index];
+  const answer = quizState.answers[quizState.index];
+  const answered = answer !== null && answer !== undefined;
+  const isLast = quizState.index === total - 1;
+  const progress = ((quizState.index + 1) / total) * 100;
+
+  const options = question.options.map((option, index) => {
+    const selected = answer === index;
+    const correct = index === question.correct;
+    const classes = ["quiz-option"];
+    if (answered && correct) classes.push("is-correct");
+    if (answered && selected && !correct) classes.push("is-wrong");
+    const mark = answered && correct
+      ? `<span class="quiz-mark is-ok">${icon("check")}</span>`
+      : answered && selected && !correct
+        ? `<span class="quiz-mark is-bad">${icon("x")}</span>`
+        : "";
+    return `
+      <button class="${classes.join(" ")}" type="button" data-quiz-option="${index}" ${answered ? "disabled" : ""} aria-pressed="${selected}">
+        <span class="quiz-letter">${String.fromCharCode(65 + index)}</span>
+        <span class="quiz-option-text">${option}</span>
+        ${mark}
+      </button>`;
+  }).join("");
+
+  const feedback = answered ? `
+    <div class="quiz-feedback ${answer === question.correct ? "is-ok" : "is-bad"}" id="quizFeedback" role="status" tabindex="-1">
+      <span class="quiz-feedback-icon">${icon(answer === question.correct ? "check" : "x")}</span>
+      <div>
+        <strong>${answer === question.correct ? "¡Correcto!" : "Todavía no"}</strong>
+        <p>${question.explanation}</p>
+        <a class="quiz-feedback-link" href="${question.link.href}">${question.link.label} ${icon("arrow-right")}</a>
+      </div>
+    </div>` : "";
+
+  mount.innerHTML = `
+    <div class="quiz-progress" aria-label="Progreso del quiz">
+      <div class="quiz-progress-meta">
+        <span>Pregunta ${quizState.index + 1} de ${total}</span>
+        <span>${activeQuizRoute.shortName}</span>
+      </div>
+      <div class="quiz-progress-track" role="progressbar" aria-label="Pregunta ${quizState.index + 1} de ${total}" aria-valuemin="1" aria-valuemax="${total}" aria-valuenow="${quizState.index + 1}">
+        <span style="width:${progress}%"></span>
+      </div>
+    </div>
+    <section class="card quiz-card" aria-labelledby="quizQuestion">
+      <span class="section-label">${question.typeLabel} · ${question.topic}</span>
+      <h2 id="quizQuestion" tabindex="-1">${question.question}</h2>
+      <div class="quiz-options" role="group" aria-labelledby="quizQuestion">${options}</div>
+      ${feedback}
+      <div class="quiz-footer">
+        <span class="quiz-hint">${answered ? "Revisa la explicación y continúa." : "Elige una opción para ver la retroalimentación."}</span>
+        ${answered ? `<button class="btn primary" type="button" data-quiz-next>${isLast ? "Ver resultado" : "Siguiente pregunta"} ${icon("arrow-right")}</button>` : ""}
+      </div>
+    </section>`;
+}
+
+function renderQuizResult() {
+  const total = activeQuiz.length;
+  const score = quizScore();
+  const percentage = Math.round((score / total) * 100);
+  const message = score >= 18
+    ? "Excelente dominio de esta ruta metabólica."
+    : score >= 14
+      ? "Muy buen trabajo: tienes una base sólida."
+      : score >= 10
+        ? "Vas por buen camino; conviene repasar algunos puntos."
+        : "Este es un buen punto de partida. Repasa las explicaciones y vuelve a intentarlo.";
+
+  const review = activeQuiz.map((question, index) => {
+    const answer = quizState.answers[index];
+    const correct = answer === question.correct;
+    return `
+      <li class="quiz-review-item ${correct ? "is-ok" : "is-bad"}">
+        <span class="quiz-review-status">${icon(correct ? "check" : "x")}</span>
+        <div>
+          <strong>${String(index + 1).padStart(2, "0")}. ${question.question}</strong>
+          <span>${correct ? "Respuesta correcta" : `Respuesta correcta: ${question.options[question.correct]}`}</span>
+          <a href="${question.link.href}">${question.link.label} ${icon("arrow-right")}</a>
+        </div>
+      </li>`;
+  }).join("");
+
+  return `
+    <section class="card quiz-result" aria-labelledby="quizResultTitle">
+      <div class="quiz-score" style="--quiz-pct:${percentage}%">
+        <div><strong>${score}</strong><span>/ ${total}</span></div>
+      </div>
+      <span class="eyebrow">Resultado · ${activeQuizRoute.name}</span>
+      <h2 id="quizResultTitle" tabindex="-1">${message}</h2>
+      <p>Has acertado <strong>${score} de ${total}</strong> preguntas (${percentage} %). Cada explicación enlaza con la ficha de la enfermedad para que puedas repasar el concepto.</p>
+      <div class="quiz-result-actions">
+        <button class="btn primary" type="button" data-quiz-restart>${icon("reset")} Repetir esta ruta</button>
+        <a class="btn" href="#/quiz">${icon("quiz")} Elegir otra ruta</a>
+        <a class="btn" href="#/pathway/${activeQuizRoute.id}">${icon("map")} Ver la ruta</a>
+      </div>
+      <h3 class="quiz-review-title">Revisión de respuestas</h3>
+      <ol class="quiz-review">${review}</ol>
+    </section>`;
+}
+
+function startQuiz() {
+  if (!activeQuizRoute) return;
+  resetQuizState(true);
+  renderQuizContent();
+  focusQuizElement("quizQuestion");
+}
+
+function answerQuiz(optionIndex) {
+  const answer = quizState.answers[quizState.index];
+  if (answer !== null && answer !== undefined) return;
+  quizState.answers[quizState.index] = optionIndex;
+  renderQuizContent();
+  focusQuizElement("quizFeedback");
+}
+
+function nextQuizQuestion() {
+  if (quizState.index >= activeQuiz.length - 1) {
+    quizState.completed = true;
+    renderQuizContent();
+    focusQuizElement("quizResultTitle");
+  } else {
+    quizState.index += 1;
+    renderQuizContent();
+    focusQuizElement("quizQuestion");
+  }
+}
+
+function restartQuiz() {
+  startQuiz();
+}
+
 /* ---------------- Router ---------------- */
 function router() {
   const raw = location.hash.replace(/^#\/?/, "");
@@ -1082,20 +1382,26 @@ function router() {
   setActiveNav(route);
   window.scrollTo({ top: 0, behavior: "instant" });
 
-  if (route === "atlas") { renderAtlas(); document.title = "Mapa Interactivo de Errores Innatos del Metabolismo (EIM)"; }
-  else if (route === "pathways") { renderPathways(); document.title = "Mapa metabólico — Mapa Interactivo de EIM"; }
+  if (route === "atlas") { renderAtlas(); document.title = SITE_FULL_NAME; }
+  else if (route === "pathways") { renderPathways(); document.title = `Mapa metabólico — ${SITE_NAME}`; }
   else if (route === "pathway") {
     renderPathway(id, focus || state.focusDisease);
     state.focusDisease = null;
-    document.title = `${PATHWAY_BY_ID[id]?.name || "Ruta"} — Atlas Metabólico`;
+    document.title = `${PATHWAY_BY_ID[id]?.name || "Ruta"} — ${SITE_NAME}`;
   }
-  else if (route === "explorer") { renderExplorer(); document.title = "Explorador — Mapa Interactivo de EIM"; }
+  else if (route === "explorer") { renderExplorer(); document.title = `Explorador — ${SITE_NAME}`; }
   else if (route === "disease") {
     renderDisease(id);
-    document.title = `${DISEASE_BY_ID[id]?.name || "Ficha"} — Atlas Metabólico`;
+    document.title = `${DISEASE_BY_ID[id]?.name || "Ficha"} — ${SITE_NAME}`;
   }
-  else if (route === "sustento") { renderDocPage("sustento"); document.title = "Sustento científico — Mapa Interactivo de EIM"; }
-  else if (route === "manual") { renderDocPage("manual"); document.title = "Manual de uso — Mapa Interactivo de EIM"; }
+  else if (route === "quiz") {
+    const quizRoute = id ? QUIZ_ROUTE_META.find((item) => item.id === id) : null;
+    if (id && !quizRoute) { location.hash = "#/quiz"; return; }
+    renderQuiz(quizRoute);
+    document.title = quizRoute ? `Quiz: ${quizRoute.name} — ${SITE_NAME}` : `Quiz por rutas — ${SITE_NAME}`;
+  }
+  else if (route === "sustento") { renderDocPage("sustento"); document.title = `Sustento científico — ${SITE_NAME}`; }
+  else if (route === "manual") { renderDocPage("manual"); document.title = `Manual de uso — ${SITE_NAME}`; }
   else { location.hash = "#/atlas"; }
 
   if (focusMainAfterRoute) {
@@ -1121,7 +1427,12 @@ function buildSearchIndex() {
       type: "Organelo", title: o.name, sub: o.tagline,
       href: `#/atlas`, iconName: "atlas", organelle: o.id,
       hay: [o.name, o.description, o.tagline].join(" ").toLowerCase()
-    }))
+    })),
+    {
+      type: "Actividad", title: "Quiz por rutas", sub: `${QUIZ_ROUTE_META.length} rutas · ${QUIZ_PER_ROUTE} preguntas por ruta`,
+      href: "#/quiz", iconName: "quiz",
+      hay: "quiz actividad repaso autoevaluación retroalimentación preguntas rutas enfermedades".toLowerCase()
+    }
   ];
 }
 const SEARCH_INDEX = buildSearchIndex();
@@ -1149,7 +1460,7 @@ function renderSearchResults(query) {
     box.innerHTML = `<div class="search-empty">No se encontraron coincidencias para “${esc(query)}”.</div>`;
     return;
   }
-  const grouped = ["Enfermedad", "Ruta metabólica", "Organelo"].map((type) => {
+  const grouped = ["Enfermedad", "Ruta metabólica", "Organelo", "Actividad"].map((type) => {
     const items = found.filter((i) => i.type === type).slice(0, 5);
     if (!items.length) return "";
     return `<div class="search-group">${type}</div>` + items.map((item) => `
@@ -1219,6 +1530,14 @@ document.addEventListener("click", (e) => {
     document.querySelectorAll("[data-doc-scroll]").forEach((b) => b.classList.toggle("active", b === docLink));
     return;
   }
+  const quizStart = e.target.closest("[data-quiz-start]");
+  if (quizStart) { startQuiz(); return; }
+  const quizOption = e.target.closest("[data-quiz-option]");
+  if (quizOption) { answerQuiz(Number(quizOption.dataset.quizOption)); return; }
+  const quizNext = e.target.closest("[data-quiz-next]");
+  if (quizNext) { nextQuizQuestion(); return; }
+  const quizRestart = e.target.closest("[data-quiz-restart]");
+  if (quizRestart) { restartQuiz(); return; }
   const printBtn = e.target.closest("[data-doc-print]");
   if (printBtn) { window.print(); return; }
 });
